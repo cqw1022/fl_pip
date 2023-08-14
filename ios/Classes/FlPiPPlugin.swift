@@ -42,6 +42,8 @@ public class FlPiPPlugin: NSObject, FlutterPlugin, AVPictureInPictureControllerD
             dispose()
             disposeEngine()
             result(1)
+        case "setUrl":
+            result(setUrl(call.arguments as! [String: Any?]))
         case "isActive":
             if isAvailable() {
                 if pipController?.isPictureInPictureActive ?? false {
@@ -69,6 +71,28 @@ public class FlPiPPlugin: NSObject, FlutterPlugin, AVPictureInPictureControllerD
         default:
             result(nil)
         }
+    }
+
+    func setUrl(_ args: [String: Any?]) -> Int {
+        if(playerLayer==null) {
+            return 1
+        }
+        let path = args["path"] as! String
+        let packageName = args["packageName"] as? String
+        let assetPath: String
+        if packageName != nil {
+            assetPath = registrar.lookupKey(forAsset: path, fromPackage: packageName!)
+        } else {
+            assetPath = registrar.lookupKey(forAsset: path)
+        }
+        let bundlePath = Bundle.main.path(forResource: assetPath, ofType: nil)
+        if bundlePath == nil {
+            print("FlPiP error : Unable to load video resources, \(path) in \(packageName ?? "current")")
+            return 1
+        }
+        let asset = AVURLAsset(url: URL(fileURLWithPath: bundlePath!)))
+        let playerItem = AVPlayerItem(asset: asset)
+        playerLayer.player!.replaceCurrentItem(with: playerItem)
     }
 
     func enable(_ args: [String: Any?]) -> Int {
