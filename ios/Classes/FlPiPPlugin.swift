@@ -93,6 +93,7 @@ public class FlPiPPlugin: NSObject, FlutterPlugin, AVPictureInPictureControllerD
         let asset = AVURLAsset(url: URL(fileURLWithPath: bundlePath!))
         let playerItem = AVPlayerItem(asset: asset)
         playerLayer?.player!.replaceCurrentItem(with: playerItem)
+        return 0
     }
 
     func enable(_ args: [String: Any?]) -> Int {
