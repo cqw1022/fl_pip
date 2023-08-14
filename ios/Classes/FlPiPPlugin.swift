@@ -74,7 +74,7 @@ public class FlPiPPlugin: NSObject, FlutterPlugin, AVPictureInPictureControllerD
     }
 
     func setUrl(_ args: [String: Any?]) -> Int {
-        if(playerLayer==null) {
+        if(playerLayer==nil) {
             return 1
         }
         let path = args["path"] as! String
@@ -90,9 +90,9 @@ public class FlPiPPlugin: NSObject, FlutterPlugin, AVPictureInPictureControllerD
             print("FlPiP error : Unable to load video resources, \(path) in \(packageName ?? "current")")
             return 1
         }
-        let asset = AVURLAsset(url: URL(fileURLWithPath: bundlePath!)))
+        let asset = AVURLAsset(url: URL(fileURLWithPath: bundlePath!))
         let playerItem = AVPlayerItem(asset: asset)
-        playerLayer.player!.replaceCurrentItem(with: playerItem)
+        playerLayer?.player!.replaceCurrentItem(with: playerItem)
     }
 
     func enable(_ args: [String: Any?]) -> Int {
