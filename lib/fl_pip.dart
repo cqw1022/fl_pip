@@ -188,6 +188,7 @@ class FlPiPiOSConfig extends FlPiPConfig {
       this.packageName = 'fl_pip',
       this.enableControls = false,
       this.enablePlayback = false,
+      this.entryPoint = "pipMain",
       super.rect});
 
   /// 视频路径 用于修修改画中画尺寸
@@ -207,6 +208,8 @@ class FlPiPiOSConfig extends FlPiPConfig {
   /// 开启播放速度
   /// Turn on playback speed
   final bool enablePlayback;
+
+  final String entryPoint;
 
   @override
   Map<String, dynamic> toMap() => {
