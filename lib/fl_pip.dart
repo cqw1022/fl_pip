@@ -217,6 +217,7 @@ class FlPiPiOSConfig extends FlPiPConfig {
         'enableControls': enableControls,
         'enablePlayback': enablePlayback,
         'packageName': packageName,
+        'entryPoint': entryPoint,
         'path': path
       };
 }

@@ -165,14 +165,18 @@ public class FlPiPPlugin: NSObject, FlutterPlugin, AVPictureInPictureControllerD
     func createFlutterEngine(_ args: [String: Any?]) {
         disposeEngine()
         if withEngine {
+            var entryPoint = args["entryPoint"] as! String
+            if(entryPoint.isEmpty) {
+                entryPoint = "pipMain"
+            }
             engineGroup = FlutterEngineGroup(name: "pip.flutter", project: nil)
             let rootController = (rootWindow?.rootViewController as! FlutterViewController)
-            flutterEngine = engineGroup!.makeEngine(withEntrypoint: "pipMain", libraryURI: nil)
+            flutterEngine = engineGroup!.makeEngine(withEntrypoint: entryPoint, libraryURI: nil)
             flutterController = FlutterViewController(
                 engine: flutterEngine!,
                 nibName: rootController.nibName,
                 bundle: rootController.nibBundle)
-            flutterEngine!.run(withEntrypoint: "pipMain")
+            flutterEngine!.run(withEntrypoint: entryPoint)
         }
     }
 
