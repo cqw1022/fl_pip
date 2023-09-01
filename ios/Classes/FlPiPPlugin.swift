@@ -1,4 +1,5 @@
 import AVKit
+import SwiftUI
 import Flutter
 import Foundation
 import UIKit
@@ -16,6 +17,8 @@ public class FlPiPPlugin: NSObject, FlutterPlugin, AVPictureInPictureControllerD
     private var withEngine: Bool = false
 
     private var rootWindow: UIWindow?
+    private var contentViewPokerNames: UIViewController?
+    private var contentViewPokerNums: UIViewController?
 
     private var channel: FlutterMethodChannel
 
@@ -66,6 +69,75 @@ public class FlPiPPlugin: NSObject, FlutterPlugin, AVPictureInPictureControllerD
                 }
             }
             result(nil)
+        case "initPokerData":
+            if #available(iOS 13.0.0, *) {
+                let args = call.arguments as! [String: Any?]
+                let widthNames = args["widthNames"] as! CGFloat
+                let paddingNames = args["paddingNames"] as! [String: Any?]
+                let dataArrayNames = args["dataArrayNames"] as! [String]
+                contentViewPokerNames?.removeFromParent()
+                contentViewPokerNames?.view.removeFromSuperview()
+                let _contentViewPokerNames = ContentViewController();
+                var edgeInsetsNames = EdgeInsets();
+                if(paddingNames["top"] != nil) {
+                    edgeInsetsNames.top = paddingNames["top"] as! CGFloat
+                }
+                if(paddingNames["left"] != nil) {
+                    edgeInsetsNames.leading = paddingNames["left"] as! CGFloat
+                }
+                if(paddingNames["bottom"] != nil) {
+                    edgeInsetsNames.bottom = paddingNames["bottom"] as! CGFloat
+                }
+                if(paddingNames["right"] != nil) {
+                    edgeInsetsNames.trailing = paddingNames["right"] as! CGFloat
+                }
+                _contentViewPokerNames.setData(width: widthNames, padding: edgeInsetsNames, dataArray: dataArrayNames)
+                contentViewPokerNames = _contentViewPokerNames
+                flutterController!.view.addSubview(contentViewPokerNames!.view)
+                
+                let widthNums = args["widthNums"] as! CGFloat
+                let paddingNums = args["paddingNums"] as! [String: Any?]
+                let dataArrayNums = args["dataArrayNums"] as! [String]
+                contentViewPokerNums?.removeFromParent()
+                contentViewPokerNums?.view.removeFromSuperview()
+                let _contentViewPokerNums = ContentViewController();
+                
+                var edgeInsetsNums = EdgeInsets();
+                if(paddingNums["top"] != nil) {
+                    edgeInsetsNums.top = paddingNums["top"] as! CGFloat
+                }
+                if(paddingNums["left"] != nil) {
+                    edgeInsetsNums.leading = paddingNums["left"] as! CGFloat
+                }
+                if(paddingNums["bottom"] != nil) {
+                    edgeInsetsNums.bottom = paddingNums["bottom"] as! CGFloat
+                }
+                if(paddingNums["right"] != nil) {
+                    edgeInsetsNums.trailing = paddingNums["right"] as! CGFloat
+                }
+                
+                _contentViewPokerNums.setData(width: widthNums, padding: edgeInsetsNums, dataArray: dataArrayNums)
+                contentViewPokerNums = _contentViewPokerNums
+                flutterController!.view.addSubview(contentViewPokerNums!.view)
+                
+                result(true)
+            }
+        case "updatePokerData":
+               if #available(iOS 13.0.0, *) {
+                   if (contentViewPokerNums==nil) {
+                       return
+                   }
+                   
+                   let args = call.arguments as! [String: Any?]
+                   let dataArrayNums = args["dataArrayNums"] as! [String]
+                   contentViewPokerNums?.removeFromParent()
+                   contentViewPokerNums?.view.removeFromSuperview()
+                   let _contentViewPokerNums = ContentViewController();
+                   _contentViewPokerNums.setData(width: (contentViewPokerNums as? ContentViewController)!.width, padding: (contentViewPokerNums as? ContentViewController)!.padding, dataArray: dataArrayNums)
+                   contentViewPokerNums = _contentViewPokerNums
+                   flutterController!.view.addSubview(contentViewPokerNums!.view)
+                   result(true)
+                }
         case "available":
             result(isAvailable())
         default:
@@ -142,6 +214,9 @@ public class FlPiPPlugin: NSObject, FlutterPlugin, AVPictureInPictureControllerD
             player!.accessibilityElementsHidden = true
             pipController = AVPictureInPictureController(playerLayer: playerLayer!)
             pipController!.delegate = self
+            // 添加播放完成通知
+           NotificationCenter.default.addObserver(self, selector: #selector(playerItemDidReachEnd(notification:)), name: .AVPlayerItemDidPlayToEndTime, object: player!.currentItem)
+           
 
             let enableControls = args["enableControls"] as! Bool
             pipController!.setValue(enableControls ? 0 : 1, forKey: "controlsStyle")
@@ -161,6 +236,11 @@ public class FlPiPPlugin: NSObject, FlutterPlugin, AVPictureInPictureControllerD
         }
         return 2
     }
+    @objc func playerItemDidReachEnd(notification: NSNotification) {
+       // 播放完成时，将播放进度重置并重新播放
+       player?.seek(to: .zero)
+       player?.play()
+   }
 
     func createFlutterEngine(_ args: [String: Any?]) {
         disposeEngine()
@@ -226,6 +306,8 @@ public class FlPiPPlugin: NSObject, FlutterPlugin, AVPictureInPictureControllerD
                 newController.view.frame = rect
                 firstWindow.rootViewController = newController
             }
+            
+         
             channel.invokeMethod("onPiPStatus", arguments: 0)
         }
     }

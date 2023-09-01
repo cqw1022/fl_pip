@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ffi';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -75,6 +76,32 @@ class FlPiP {
   final _channel = const MethodChannel('fl_pip');
 
   final ValueNotifier<PiPStatus> status = ValueNotifier(PiPStatus.unavailable);
+
+  /// 开启画中画
+  /// enable picture-in-picture
+  Future<bool> initPokerData({
+    required double widthNames,
+    required Map paddingNames,
+    required List<String> dataArrayNames,
+    required double widthNums,
+    required Map paddingNums,
+    required List<String> dataArrayNums,
+  }) async {
+    
+    final bool? state = await _channel.invokeMethod<bool>(
+        'initPokerData', {"widthNames":widthNames, "paddingNames":paddingNames, "dataArrayNames":dataArrayNames, "widthNums":widthNums, "paddingNums": paddingNums, "dataArrayNums": dataArrayNums, });
+    return state!;
+  }
+
+
+  Future<bool> updatePokerData({
+    required List<String> dataArrayNums,
+  }) async {
+    
+    final bool? state = await _channel.invokeMethod<bool>(
+        'updatePokerData', {"dataArrayNums": dataArrayNums,});
+    return state!;
+  }
 
   /// 开启画中画
   /// enable picture-in-picture
