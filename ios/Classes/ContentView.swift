@@ -35,15 +35,15 @@ struct ContentView: View {
 //                       ))
 //               }
         VStack {
-            ForEach(dataArray, id: \.self) { item in
-                    Text(item)
+            ForEach(dataArray.indices, id: \.self) { index in
+                Text(dataArray[index])
 //                        .font(.title)
 //                    .frame(width: 50, height: 50)
-                    .padding(.bottom,0)
+                .padding(.bottom,0)
 //                    .padding(.top,-10)
 //                    .background(Color.black)
-                    .foregroundColor(.white)
-                }
+                .foregroundColor(.white)
+            }
         }
 //        .background(Color.red)
         .frame(width: width, height: 50)
