@@ -15,12 +15,17 @@ struct FixedHeightTextView: View {
 struct ContentView: View {
     private var width:CGFloat
     private var padding:EdgeInsets
-    private var dataArray:[String]
+    private var controller:ContentViewController
+    @State private var dataArray:[String]
+    @State private var updateDataId: Int = 0
+    let timer = Timer.publish(every: 0.5, on: .main, in: .common).autoconnect()
     
-    init(width: CGFloat, padding: EdgeInsets, dataArray: [String]) {
+    
+    init(width: CGFloat, padding: EdgeInsets, dataArray: [String], controller: ContentViewController) {
         self.width = width
         self.padding = padding
         self.dataArray = dataArray
+        self.controller = controller
     }
     
     var body: some View {
@@ -48,6 +53,12 @@ struct ContentView: View {
 //        .background(Color.red)
         .frame(width: width, height: 50)
         .padding(padding)
+        .onReceive(timer) { _ in
+            if(controller.needupdateDataId > self.updateDataId) {
+                self.updateDataId = controller.needupdateDataId
+                self.dataArray = controller.dataArray
+            }
+        }
     }
     
 }
@@ -66,6 +77,9 @@ class ContentViewController: UIViewController {
     public var width:CGFloat = 0
     public var padding:EdgeInsets = EdgeInsets()
     public var dataArray:[String] = []
+    public var needupdateDataId: Int = 0
+
+    private var swiftUIView: ContentView?
     
     // 实现 required init(coder:)
     func setData(width: CGFloat, padding: EdgeInsets, dataArray: [String]) {
@@ -75,12 +89,17 @@ class ContentViewController: UIViewController {
         self.dataArray = dataArray
     }
     
+    func updateDataArray(dataArray: [String]) {
+        // self.dataArray = dataArray
+        self.dataArray = dataArray
+        self.needupdateDataId += 1
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Create a SwiftUI view
-        let swiftUIView = ContentView(width: self.width, padding: self.padding, dataArray: self.dataArray)
+        swiftUIView = ContentView(width: self.width, padding: self.padding, dataArray: self.dataArray, controller: self)
 //        swiftUIView.counter = 10
 //        print("@@@@@@@1111222 \(self.counter) \(swiftUIView.counter)")
 //        swiftUIView.test()

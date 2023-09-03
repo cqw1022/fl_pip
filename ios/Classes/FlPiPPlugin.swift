@@ -130,12 +130,14 @@ public class FlPiPPlugin: NSObject, FlutterPlugin, AVPictureInPictureControllerD
                    
                    let args = call.arguments as! [String: Any?]
                    let dataArrayNums = args["dataArrayNums"] as! [String]
-                   contentViewPokerNums?.removeFromParent()
-                   contentViewPokerNums?.view.removeFromSuperview()
-                   let _contentViewPokerNums = ContentViewController();
-                   _contentViewPokerNums.setData(width: (contentViewPokerNums as? ContentViewController)!.width, padding: (contentViewPokerNums as? ContentViewController)!.padding, dataArray: dataArrayNums)
-                   contentViewPokerNums = _contentViewPokerNums
-                   flutterController!.view.addSubview(contentViewPokerNums!.view)
+                   (contentViewPokerNums as! ContentViewController).updateDataArray(dataArray: dataArrayNums)
+                //    contentViewPokerNums?.removeFromParent()
+                //    contentViewPokerNums?.view.removeFromSuperview()
+                //    let _contentViewPokerNums = ContentViewController();
+                //    _contentViewPokerNums.setData(width: (contentViewPokerNums as? ContentViewController)!.width, padding: (contentViewPokerNums as? ContentViewController)!.padding, dataArray: dataArrayNums)
+                //    contentViewPokerNums = _contentViewPokerNums
+
+                //    flutterController!.view.addSubview(contentViewPokerNums!.view)
                    result(true)
                 }
         case "available":
